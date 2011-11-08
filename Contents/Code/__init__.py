@@ -208,7 +208,7 @@ def MoviesCategoryMenu(sender,url,page=1):
         if Prefs['Submenu'] == True:
           dir.Append(Function(PopupDirectoryItem(VideoSubMenu, title, thumb = Function(Thumb, url=thumb), subtitle = subtitle, summary = summary, duration = duration), video_id=id, title = title))
         else:
-          dir.Append(Function(VideoItem(PlayVideo, title, thumb = Function(Thumb, url=thumb), subtitle = subtitle, summary = summary, duration = duration), video_id=id))
+          dir.Append(VideoItem(Route(PlayVideo, video_id=id), title, thumb = Function(Thumb, url=thumb), subtitle = subtitle, summary = summary, duration = duration))
 
   if '>Next<' in pageContent:
     dir.Append(Function(DirectoryItem(MoviesCategoryMenu, L("Next Page ...")), url=url, page = page + 1))
@@ -258,7 +258,16 @@ def LiveMenu(sender,page=1):
     except: 
       summary = ''
       
-    dir.Append(Function(VideoItem(PlayVideo, title, thumb = Function(Thumb, url=thumb), subtitle = subtitle, summary = summary, duration = duration), video_id=id))
+    if 'Crackle' in summary:
+      jsondetails = re.findall("(?<='PLAYER_CONFIG':)([^']+);",HTTP.Request('http://www.youtube.com/watch?v='+id).content)
+      if len(jsondetails) >0 :
+        mediaid =  re.findall('(?<="mediaid": ")([^"]+)"',jsondetails[0])[0]
+        dir.Append(WebVideoItem(CRACKLE_URL%mediaid, title, thumb = Function(Thumb, url=thumb), subtitle = subtitle, summary = summary, duration = duration))
+    else:
+      if Prefs['Submenu'] == True:
+        dir.Append(Function(PopupDirectoryItem(VideoSubMenu, title, thumb = Function(Thumb, url=thumb), subtitle = subtitle, summary = summary, duration = duration), video_id=id, title = title))
+      else:
+        dir.Append(VideoItem(Route(PlayVideo, video_id=id), title, thumb = Function(Thumb, url=thumb), subtitle = subtitle, summary = summary, duration = duration))
 
   if '>Next<' in pageContent:
     dir.Append(Function(DirectoryItem(MoviesCategoryMenu, L("Next Page ...")), url=url, page = page + 1))
@@ -321,7 +330,7 @@ def ShowsVideos(sender,url,thumb):
     if Prefs['Submenu'] == True:
       dir.Append(Function(PopupDirectoryItem(VideoSubMenu, title, thumb = thumb, subtitle = subtitle, summary = summary, duration = duration), video_id=id, title = title))
     else:
-      dir.Append(Function(VideoItem(PlayVideo, title, thumb = thumb, subtitle = subtitle, summary = summary, duration = duration), video_id=id))
+      dir.Append(VideoItem(Route(PlayVideo, video_id=id), title, thumb = thumb, subtitle = subtitle, summary = summary, duration = duration))
 
   if len(dir) == 0:
     return MessageContainer("Empty", "There aren't any items")
@@ -382,7 +391,7 @@ def TrailersVideos(sender,url,page=1):
 #      dir.Append(Function(DirectoryItem(VideoSubMenu, title=title, contextKey=id, contextArgs={}), video_id=id, title = title))
       dir.Append(Function(PopupDirectoryItem(VideoSubMenu, title=title, thumb = thumb, subtitle = subtitle, summary = summary, duration = duration), video_id=id, title = title))
     else:
-      dir.Append(Function(VideoItem(PlayVideo, title, thumb = thumb, subtitle = subtitle, summary = summary, duration = duration), video_id=id))
+      dir.Append(VideoItem(Route(PlayVideo, video_id=id), title, thumb = thumb, subtitle = subtitle, summary = summary, duration = duration))
 
   if '>Next<' in pageContent:
     dir.Append(Function(DirectoryItem(TrailersVideos, L("Next Page ...")), url=url, page = page + 1))
@@ -595,7 +604,7 @@ def ParseFeed(sender=None, url='', page=1):
         if Prefs['Submenu'] == True:
           dir.Append(Function(PopupDirectoryItem(VideoSubMenu, title=title, subtitle=published, summary=summary, duration=duration, rating=rating, thumb=Function(Thumb, url=thumb)), video_id=video_id, title = title))
         else:
-          dir.Append(Function(VideoItem(PlayVideo, title=title, subtitle=published, summary=summary, duration=duration, rating=rating, thumb=Function(Thumb, url=thumb)), video_id=video_id))
+          dir.Append(VideoItem(Route(PlayVideo, video_id=video_id), title=title, subtitle=published, summary=summary, duration=duration, rating=rating, thumb=Function(Thumb, url=thumb)))
 
       if (need_next):
         dir.Append(Function(DirectoryItem(ParseFeed, title="Next"), url=url,page = page+1))
@@ -661,7 +670,7 @@ def ParseSubscriptionFeed(sender=None, url='',page=1):
 		    if Prefs['Submenu'] == True:
 		      dir.Append(Function(PopupDirectoryItem(VideoSubMenu,  title=title, subtitle=published, summary=summary, duration=duration, rating=rating, thumb=Function(Thumb, url=thumb)), video_id=video_id, title = title))
 		    else:
-		      dir.Append(Function(VideoItem(PlayVideo, title=title, subtitle=published, summary=summary, duration=duration, rating=rating, thumb=Function(Thumb, url=thumb)), video_id=video_id))
+		      dir.Append(VideoItem(Route(PlayVideo, video_id=video_id), title=title, subtitle=published, summary=summary, duration=duration, rating=rating, thumb=Function(Thumb, url=thumb)))
 	
   if len(dir) == 0:
     return MessageContainer(L('Error'), L('This query did not return any result'))
@@ -796,7 +805,7 @@ def ParseSubscriptions(sender=None, url='',page=1):
 def VideoSubMenu(sender, video_id, title):
   dir = MediaContainer(httpCookies=HTTP.GetCookiesForURL('http://www.youtube.com/'))
   
-  dir.Append(Function(VideoItem(PlayVideo,L('Play Video')), video_id=video_id))
+  dir.Append(VideoItem(Route(PlayVideo, video_id=video_id) ,L('Play Video')))
   #dir.Append(Function(DirectoryItem(SetAsFavorite, L('Mark as favorite in YouTube account'), ''),video_id = video_id,title =title))  
   dir.Append(Function(DirectoryItem(ParseFeed, L('View Related'), ''),url=YOUTUBE_RELATED_FEED%video_id))
   
@@ -835,7 +844,8 @@ def SetAsFavorite(sender, video_id, title):
   except:
     return MessageContainer("Error","This video has NOT been added as a favorite to your account")
   
-def PlayVideo(sender, video_id):
+@route('/video/youtube/play')
+def PlayVideo(video_id):
   yt_page = HTTP.Request(YOUTUBE_VIDEO_PAGE % (video_id), cacheTime=1).content 
 
   fmt_url_map = re.findall('"url_encoded_fmt_stream_map".+?"([^"]+)', yt_page)[0]
