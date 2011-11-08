@@ -21,8 +21,6 @@
 		<string>AAC</string>
 		<string>MP3</string>
 	</array>
-	<key>PlexClientPlatforms</key>
-	<string>MacOSX,LGTV</string>
 	<key>PlexFrameworkVersion</key>
 	<string>2</string>
 	<key>PlexMediaContainer</key>
@@ -30,10 +28,6 @@
 		<string>MP4</string>
 		<string>FLV</string>
 	</array>
-	<key>PlexPluginConsoleLogging</key>
-	<string>1</string>
-	<key>PlexPluginDevMode</key>
-	<string>0</string>
 	<key>PlexPluginMode</key>
 	<string>AlwaysOn</string>
 	<key>PlexVideoCodec</key>
