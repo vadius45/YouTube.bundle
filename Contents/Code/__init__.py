@@ -145,7 +145,7 @@ def ChannelsMenu(sender):
 
 def MoviesMenu(sender):
   return MessageContainer("Maintenance"," This section still needs fixing, thanks for your patience, it should just be a few days .....")
-  dir = MediaContainer(title2 = L("Movies"), httpCookies=HTTP.GetCookiesForURL('http://www.youtube.com/')) 
+  dir = MediaContainer(title2 = L("Movies"), httpCookies=HTTP.CookiesForURL('http://www.youtube.com/')) 
   Log(HTML.StringFromElement(HTML.ElementFromURL(YOUTUBE_MOVIES)))
   Log(HTML.StringFromElement(HTML.ElementFromURL(YOUTUBE_MOVIES).xpath("//div[contains(@class,'browse-content')]//div[contains(@class, 'browse-collection')]")[0]))
   Log(HTML.StringFromElement(HTML.ElementFromURL(YOUTUBE_MOVIES).xpath("//div[contains(@class,'browse-content')]//div[contains(@class, 'browse-collection')]//div[contains(@class,'slider-title')]//h2/a")[0]))
@@ -158,7 +158,7 @@ def MoviesMenu(sender):
     return dir
 
 def MoviesCategoryMenu(sender,url,page=1):
-  dir = MediaContainer(viewGroup='PanelStream',title2 = sender.title2, httpCookies=HTTP.GetCookiesForURL('http://www.youtube.com/'))
+  dir = MediaContainer(viewGroup='PanelStream',title2 = sender.title2, httpCookies=HTTP.CookiesForURL('http://www.youtube.com/'))
 #  for category in HTML.ElementFromURL(YOUTUBE_MOVIES).xpath("//div[contains(@class,'browse-content')]//div[contains(@class, 'browse-collection')]//div[contains(@class,'browse-item-content')]//h3/a"):
 
   if page > 1:
@@ -223,7 +223,7 @@ def MoviesCategoryMenu(sender,url,page=1):
 ####################################################################################################
 
 def LiveMenu(sender,page=1):
-  dir = MediaContainer(viewGroup='PanelStream',title2 = L("Live"), httpCookies=HTTP.GetCookiesForURL('http://www.youtube.com/'))
+  dir = MediaContainer(viewGroup='PanelStream',title2 = L("Live"), httpCookies=HTTP.CookiesForURL('http://www.youtube.com/'))
 #  for category in HTML.ElementFromURL(YOUTUBE_MOVIES).xpath("//div[contains(@class,'browse-content')]//div[contains(@class, 'browse-collection')]//div[contains(@class,'browse-item-content')]//h3/a"):
 
   if page > 1:
@@ -315,7 +315,7 @@ def ShowsCategoryMenu(sender,url,page=1):
     return dir
 
 def ShowsVideos(sender,url,thumb):
-  dir = MediaContainer(viewGroup='InfoList',title2 = sender.title2, httpCookies=HTTP.GetCookiesForURL('http://www.youtube.com/'))
+  dir = MediaContainer(viewGroup='InfoList',title2 = sender.title2, httpCookies=HTTP.CookiesForURL('http://www.youtube.com/'))
 
   for episode in HTML.ElementFromURL(url).xpath("//tbody/tr"):
     title = episode.xpath('./td[3]//h3')[0].text.strip()
@@ -364,7 +364,7 @@ def TrailersVideos(sender,url,page=1):
 #  menu.Append(Function(DirectoryItem(SetAsFavorite, L('Mark As Favorite'), '')))  
 #  menu.Append(Function(DirectoryItem(ParseFeed, L('View Related'), ''),url=''))
   
-  dir = MediaContainer(viewGroup='PanelStream',title2 = sender.title2, httpCookies=HTTP.GetCookiesForURL('http://www.youtube.com/'))#, contextMenu=menu, noCache=True)
+  dir = MediaContainer(viewGroup='PanelStream',title2 = sender.title2, httpCookies=HTTP.CookiesForURL('http://www.youtube.com/'))#, contextMenu=menu, noCache=True)
 
   if page > 1:
     dir.Append(Function(DirectoryItem(TrailersVideos, L("Previous Page ...")), url=url, page = page - 1))
@@ -415,7 +415,7 @@ def MyAccount(sender):
   return dir 
    
 def MyContacts(sender,url):
-  dir = MediaContainer(viewGroup='InfoList', httpCookies=HTTP.GetCookiesForURL('http://www.youtube.com/'))
+  dir = MediaContainer(viewGroup='InfoList', httpCookies=HTTP.CookiesForURL('http://www.youtube.com/'))
   Page = JSON.ObjectFromURL(url, encoding='utf-8')
   if Page['feed']['openSearch$totalResults'] == 0:
     dir = MessageContainer(L("Error"), L("You have no contacts"))
@@ -427,7 +427,7 @@ def MyContacts(sender,url):
   return dir 
   
 def ContactPage(sender, username):
-  dir = MediaContainer(viewGroup='InfoList', httpCookies=HTTP.GetCookiesForURL('http://www.youtube.com/'))
+  dir = MediaContainer(viewGroup='InfoList', httpCookies=HTTP.CookiesForURL('http://www.youtube.com/'))
   dir.Append(Function(DirectoryItem(ParseFeed, username+L('\'s uploads')), url=YOUTUBE_OTHER_USER_FEED%username))
   dir.Append(Function(DirectoryItem(ParseFeed, username+L('\'s favorites')), url=YOUTUBE_USER_FAVORITES%username))
 #  dir.Append(Function(DirectoryItem(ParseSubscriptions, username+L('\'s subscriptions')), url=YOUTUBE_USER_SUBSCRIPTIONS%username))
@@ -553,7 +553,7 @@ def check_rejected_entry(entry):
 
 
 def ParseFeed(sender=None, url='', page=1):
-  dir = MediaContainer(viewGroup='InfoList', replaceParent = (page>1), httpCookies=HTTP.GetCookiesForURL('http://www.youtube.com/'))
+  dir = MediaContainer(viewGroup='InfoList', replaceParent = (page>1), httpCookies=HTTP.CookiesForURL('http://www.youtube.com/'))
 
   Localurl = AddJSONSuffix(url)
   Localurl = Regionalize(Localurl +'&start-index=' + str((page-1)*MAXRESULTS+1) + '&max-results=' + str(MAXRESULTS))
@@ -617,7 +617,7 @@ def ParseFeed(sender=None, url='', page=1):
     return dir
 
 def ParseSubscriptionFeed(sender=None, url='',page=1):
-  dir = MediaContainer(viewGroup='InfoList', replaceParent = (page>1), httpCookies=HTTP.GetCookiesForURL('http://www.youtube.com/'))
+  dir = MediaContainer(viewGroup='InfoList', replaceParent = (page>1), httpCookies=HTTP.CookiesForURL('http://www.youtube.com/'))
 
   Localurl = AddJSONSuffix(url)
   Localurl = Regionalize(Localurl +'&start-index=' + str((page-1)*MAXRESULTS+1) + '&max-results=' + str(MAXRESULTS))
@@ -680,7 +680,7 @@ def ParseSubscriptionFeed(sender=None, url='',page=1):
     return dir
 
 def ParseChannelFeed(sender=None, url='',page=1):
-  dir = MediaContainer(viewGroup='InfoList', replaceParent = (page>1), httpCookies=HTTP.GetCookiesForURL('http://www.youtube.com/'))
+  dir = MediaContainer(viewGroup='InfoList', replaceParent = (page>1), httpCookies=HTTP.CookiesForURL('http://www.youtube.com/'))
 
   Localurl = AddJSONSuffix(url)
   Localurl = Regionalize(Localurl +'&start-index=' + str((page-1)*MAXRESULTS+1) + '&max-results=' + str(MAXRESULTS))
@@ -713,7 +713,7 @@ def ParseChannelFeed(sender=None, url='',page=1):
     return dir
     
 def ParseChannelSearch(sender=None, url='',page=1):
-  dir = MediaContainer(viewGroup='InfoList', replaceParent = (page>1), httpCookies=HTTP.GetCookiesForURL('http://www.youtube.com/'))
+  dir = MediaContainer(viewGroup='InfoList', replaceParent = (page>1), httpCookies=HTTP.CookiesForURL('http://www.youtube.com/'))
 
   Localurl = AddJSONSuffix(url)+'&start-index=' + str((page-1)*MAXRESULTS+1) + '&max-results=' + str(MAXRESULTS)
 
@@ -741,7 +741,7 @@ def ParseChannelSearch(sender=None, url='',page=1):
     return dir
 
 def ParsePlaylists(sender=None, url='',page=1):
-  dir = MediaContainer(viewGroup='InfoList', replaceParent = (page>1), httpCookies=HTTP.GetCookiesForURL('http://www.youtube.com/'))
+  dir = MediaContainer(viewGroup='InfoList', replaceParent = (page>1), httpCookies=HTTP.CookiesForURL('http://www.youtube.com/'))
 
   Localurl = AddJSONSuffix(url)+'&start-index=' + str((page-1)*MAXRESULTS+1) + '&max-results=' + str(MAXRESULTS)
   
@@ -769,7 +769,7 @@ def ParsePlaylists(sender=None, url='',page=1):
     return dir
 
 def ParseSubscriptions(sender=None, url='',page=1):
-  dir = MediaContainer(viewGroup='InfoList', replaceParent = (page>1), httpCookies=HTTP.GetCookiesForURL('http://www.youtube.com/'))
+  dir = MediaContainer(viewGroup='InfoList', replaceParent = (page>1), httpCookies=HTTP.CookiesForURL('http://www.youtube.com/'))
   
   Localurl = AddJSONSuffix(url)+'&start-index=' + str((page-1)*MAXRESULTS+1) + '&max-results=' + str(MAXRESULTS)
 
@@ -803,7 +803,7 @@ def ParseSubscriptions(sender=None, url='',page=1):
 
 ####################################################################################################
 def VideoSubMenu(sender, video_id, title):
-  dir = MediaContainer(httpCookies=HTTP.GetCookiesForURL('http://www.youtube.com/'))
+  dir = MediaContainer(httpCookies=HTTP.CookiesForURL('http://www.youtube.com/'))
   
   dir.Append(VideoItem(Route(PlayVideo, video_id=video_id) ,L('Play Video')))
   #dir.Append(Function(DirectoryItem(SetAsFavorite, L('Mark as favorite in YouTube account'), ''),video_id = video_id,title =title))  
@@ -813,7 +813,7 @@ def VideoSubMenu(sender, video_id, title):
   
 def SetAsFavorite(sender, video_id, title):  
 
-  dir = MediaContainer(httpCookies=HTTP.GetCookiesForURL('http://www.youtube.com/'))
+  dir = MediaContainer(httpCookies=HTTP.CookiesForURL('http://www.youtube.com/'))
   
   try:
     req = HTTP.Request('https://www.google.com/accounts/ClientLogin', values=dict(
