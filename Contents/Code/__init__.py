@@ -553,6 +553,7 @@ def check_rejected_entry(entry):
 
 
 def ParseFeed(sender=None, url='', page=1):
+  HTTP.ClearCookies()
   dir = MediaContainer(viewGroup='InfoList', replaceParent = (page>1), httpCookies=HTTP.CookiesForURL('http://www.youtube.com/'))
 
   Localurl = AddJSONSuffix(url)
