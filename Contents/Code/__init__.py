@@ -845,7 +845,7 @@ def SetAsFavorite(sender, video_id, title):
   except:
     return MessageContainer("Error","This video has NOT been added as a favorite to your account")
   
-@route('/video/youtube/play')
+@route('/video/youtube/v/p')
 def PlayVideo(video_id):
   yt_page = HTTP.Request(YOUTUBE_VIDEO_PAGE % (video_id), cacheTime=1).content 
 
