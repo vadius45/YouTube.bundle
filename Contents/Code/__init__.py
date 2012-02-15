@@ -879,3 +879,4 @@ def PlayVideo(video_id):
   url = (fmts_info[str(fmt)]).decode('unicode_escape')
   Log("  VIDEO URL --> " + url)
   return Redirect(url)
+
